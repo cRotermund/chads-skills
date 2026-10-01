@@ -59,8 +59,9 @@ name directly.
 
 ## Branches
 
-Do not commit or push directly to `master`. Start from an up-to-date `master`
-branch and use a focused branch with one of these prefixes:
+Direct commits and pushes to `master` are disallowed. All changes must be made
+on a focused feature branch created from an up-to-date `master` branch. Use one
+of these prefixes:
 
 ```text
 feature/<short-description>
@@ -68,6 +69,11 @@ fix/<short-description>
 docs/<short-description>
 chore/<short-description>
 ```
+
+Use a branch name that follows the same Conventional Commits intent as the
+change. For example, use `feature/add-release-notes-skill` for a new skill,
+`fix/database-skill-safety` for a correction, or
+`docs/update-authoring-guide` for documentation.
 
 ## Commit Messages
 
@@ -91,7 +97,9 @@ docs: explain local skill validation
 
 ## Pull Requests
 
-Open a pull request instead of merging directly to `master`. Include:
+Push every feature branch to the remote and open a pull request. Do not merge
+or push changes directly to `master`; all changes must go through pull-request
+review. Include:
 
 - A concise summary of what changed and why.
 - The skill names and versions affected.
