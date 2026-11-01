@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../base
+  # BEGIN optional: secrets (remove these entries when no service has secrets)
+  - __SERVICE__-external-secret.yaml
+  # END optional: secrets
+
+namespace: __NAMESPACE__
+
+images:
+  - name: __SERVICE__
+    newName: ghcr.io/__GHCR_PATH__/__SERVICE__
+    newTag: latest
+
+patches:
+  - target:
+      kind: Deployment
+      name: __SERVICE__
+    patch: |-
+      - op: add
+        path: /spec/template/spec/imagePullSecrets
+        value:
+          - name: ghcr-pull-secret
+      - op: replace
+        path: /spec/replicas
+        value: 2
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always

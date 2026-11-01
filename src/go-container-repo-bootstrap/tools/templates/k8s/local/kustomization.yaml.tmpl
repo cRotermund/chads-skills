@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../base
+
+images:
+  - name: __SERVICE__
+    newName: localhost/__SERVICE__
+
+# BEGIN optional: secrets (remove this block when no service has secrets)
+secretGenerator:
+  - name: __SERVICE__-secret
+    envs:
+      - __SERVICE__.env
+# END optional: secrets
+
+patches:
+  - target:
+      kind: Deployment
+      name: __SERVICE__
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: LOG_LEVEL
+          value: "DEBUG"

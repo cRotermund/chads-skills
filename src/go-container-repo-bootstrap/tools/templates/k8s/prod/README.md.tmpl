@@ -1,0 +1,40 @@
+# Production Deployment
+
+This overlay deploys the services in this repository into the
+`__NAMESPACE__` namespace. It is rendered and synced by the cluster's GitOps
+controller; nothing in this repository applies it automatically.
+
+## Images
+
+The overlay references the `latest` tag of each published image:
+
+```text
+ghcr.io/__GHCR_PATH__/__SERVICE__:latest
+```
+
+The images are published by `.github/workflows/build.yml` on every push to
+`__DEFAULT_BRANCH__`. They must exist before the overlay is synced. The
+`ghcr-pull-secret` image pull secret referenced by the Deployments must exist
+in the target namespace.
+
+<!-- BEGIN optional: secrets (remove this section when no service has secrets) -->
+## Secrets
+
+Application secrets are delivered by External Secrets Operator from AWS
+Systems Manager Parameter Store. Create these parameters as `SecureString`
+values before syncing:
+
+```text
+__SSM_PREFIX__/__SERVICE__/__SSM_PARAM__
+```
+
+Never commit secret values. To add or change an `ExternalSecret`, follow the
+`external-secrets-gitops-authoring` skill so the manifest stays fully
+declarative.
+<!-- END optional: secrets -->
+
+## Rendering locally
+
+```sh
+kubectl kustomize infra/k8s/prod
+```
