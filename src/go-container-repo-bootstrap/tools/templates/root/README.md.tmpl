@@ -1,0 +1,51 @@
+# __REPO_NAME__
+
+__PROJECT_SUMMARY__
+
+## Current Components
+
+| Component | Current behavior |
+| --- | --- |
+| **__SERVICE__** | __SERVICE_DESCRIPTION__ Serves `GET /health` on port `__PORT__`. |
+
+## Architecture
+
+All services are containerized (distroless images) and deployed to Kubernetes
+with Kustomize. See [docs/architecture.md](docs/architecture.md) for details.
+
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Services | Go |
+| Configuration | Environment variables, `.env` for local runs |
+| Containers | Docker-compatible runtime, distroless images |
+| Deployment | Kubernetes, Kustomize |
+| CI/CD | GitHub Actions, GHCR |
+
+## Getting Started
+
+Prerequisites, both development workflows, and troubleshooting are in
+[CONTRIBUTING.md](CONTRIBUTING.md). The fastest path:
+
+```sh
+cd src/services/__SERVICE__
+cp .env.example .env
+go run .
+```
+
+## Repository Layout
+
+```
+src/services/<name>/   Go services, one module each (see go.work)
+src/pkg/               Shared Go libraries
+infra/k8s/             Kustomize base, local, and prod overlays
+docs/                  Architecture and development guides
+tests/                 Integration and E2E tests
+.github/workflows/     CI and image publishing
+```
+
+## Contributing
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before preparing a change. AI coding
+assistants should start with [AGENTS.md](AGENTS.md).

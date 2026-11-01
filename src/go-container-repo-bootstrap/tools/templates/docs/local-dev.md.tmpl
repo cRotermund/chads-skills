@@ -1,0 +1,78 @@
+# Local Development With Kubernetes
+
+This guide walks through building images and running them on a local
+Kubernetes cluster. For running services directly with `go run`, see
+[CONTRIBUTING.md](../CONTRIBUTING.md).
+
+All commands run from the repository root.
+
+## 1. Start a local cluster
+
+Pick one:
+
+| Cluster             | Notes                                                             |
+| ------------------- | ----------------------------------------------------------------- |
+| **Rancher Desktop** | Ships with Kubernetes built in. Easiest on Windows and macOS.     |
+| **minikube**        | Most configurable. Needs images loaded with `minikube image load`. |
+| **kind**            | Runs Kubernetes in Docker. Needs images loaded with `kind load`.  |
+
+Confirm `kubectl` points at the local cluster:
+
+```sh
+kubectl config current-context
+```
+
+## 2. Build images
+
+Images are tagged `localhost/<service>:latest`, which is what the `local`
+overlay expects:
+
+```sh
+docker build -f src/services/__SERVICE__/Dockerfile -t localhost/__SERVICE__:latest .
+```
+
+Load the image into clusters that do not share your container runtime:
+
+```sh
+minikube image load localhost/__SERVICE__:latest
+kind load docker-image localhost/__SERVICE__:latest
+```
+
+## 3. Provide local configuration
+
+Each service with secrets has an example file under `infra/k8s/local/`. Copy it
+and fill in local values; the copies are gitignored:
+
+```sh
+cp infra/k8s/local/__SERVICE__.env.example infra/k8s/local/__SERVICE__.env
+```
+
+## 4. Deploy
+
+```sh
+kubectl apply -k infra/k8s/local
+kubectl get pods
+```
+
+## 5. Reach the service
+
+```sh
+kubectl port-forward deployment/__SERVICE__ __PORT__:__PORT__
+curl http://localhost:__PORT__/health
+```
+
+## 6. Tear down
+
+```sh
+kubectl delete -k infra/k8s/local
+```
+
+## Container runtime notes
+
+| Issue                                           | Solution                                                         |
+| ----------------------------------------------- | ---------------------------------------------------------------- |
+| Docker Desktop licensing                        | Use Podman or Rancher Desktop.                                   |
+| Podman builds fail with SELinux errors          | `podman build --security-opt label=disable ...`                  |
+| Podman cannot load images into kind             | `podman save <img> \| kind load image-archive /dev/stdin`        |
+| Docker Hub rate limits                          | Log in to Docker Hub or configure a pull-through mirror.         |
+| Rancher Desktop networking broken on a VPN      | Use minikube with `--driver=docker`.                             |

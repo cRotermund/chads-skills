@@ -1,0 +1,36 @@
+# Architecture
+
+## Overview
+
+__PROJECT_SUMMARY__
+
+## Components
+
+| Component | Location | Responsibility |
+| --- | --- | --- |
+| __SERVICE__ | `src/services/__SERVICE__/` | __SERVICE_DESCRIPTION__ |
+
+## Conventions
+
+- Each service is its own Go module, joined by `go.work` for local development.
+- Services are configured only through environment variables. `.env` files are
+  a local convenience and are never part of an image or the repository.
+- Every service exposes `GET /health`; Kubernetes liveness and readiness
+  probes use it.
+- Images are built from the repository root with a per-service Dockerfile, run
+  as non-root on a distroless base, and are published to GHCR on every push to
+  `__DEFAULT_BRANCH__`.
+
+## Deployment
+
+Kubernetes manifests live under `infra/k8s/`:
+
+- `base/` holds the Deployment and Service for each component.
+- `local/` retargets images to `localhost/` and generates Secrets from local
+  `*.env` files.
+- `prod/` pins GHCR images, sets replicas and pull policy, and references
+  externally managed secrets. See `infra/k8s/prod/README.md`.
+
+## Planned Work
+
+Record planned capabilities here as they are decided.
