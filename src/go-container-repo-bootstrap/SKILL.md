@@ -1,6 +1,6 @@
 ---
 name: go-container-repo-bootstrap
-version: 1.0.0
+version: 1.0.1
 description: Bootstrap a new GitHub repository for containerized Go services with a go.work multi-module layout, Kustomize overlays, GHCR publishing, and standard contributor and agent documentation, producing the same structure every time.
 triggers:
   - bootstrap a Go repo
